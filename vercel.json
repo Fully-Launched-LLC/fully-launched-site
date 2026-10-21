@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "fullylaunched.com" }],
+      "destination": "https://www.fullylaunched.com/:path*",
+      "permanent": true
+    }
+  ]
+}
