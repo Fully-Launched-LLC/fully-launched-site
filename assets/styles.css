@@ -101,10 +101,20 @@ body[data-planet="venus"] .sky::before{transform:scaleX(-1)}
 /* HERO COPY */
 .eyebrow{top:calc(188.8 * var(--u)); font-size:calc(30.45 * var(--u)); font-weight:500;
   line-height:1; letter-spacing:calc(4 * var(--u)); text-indent:calc(4 * var(--u)); color:#fff}
-h1.title{top:calc(270 * var(--u)); font-family:var(--font-serif); font-weight:400;
+.title{top:calc(270 * var(--u)); font-family:var(--font-serif); font-weight:400;
   font-size:calc(112.4 * var(--u) * var(--title-scale, 1)); line-height:1; letter-spacing:calc(2 * var(--u));
   text-indent:calc(2 * var(--u)); color:#fff}
-h1.title .ent-line{display:inline-block}
+.title .ent-line{display:inline-block}
+/* Descriptive H1 text for SEO, shown as a subtitle under the big styled
+   word. On the 4 branches it's a span inside h1.title; on Home the title
+   slot is a div (the logo stays out of the H1) and this is the h1 itself.
+   Sized independently of --title-scale, nowrap so it can't wrap into the
+   lede on the absolutely-positioned layouts (longest, E-Commerce, is
+   ~790u vs 1353u+ available above 1030px; the tablet block shrinks it,
+   the phone block lets it wrap). */
+.title-sub{display:block; margin:calc(14 * var(--u)) 0 0; font-family:var(--font-body);
+  font-size:calc(22 * var(--u)); font-weight:500; line-height:1.25; letter-spacing:.01em;
+  text-indent:0; white-space:nowrap; color:rgba(255,255,255,.95)}
 /* Non-Home branches: was 250u (a since-reverted 18u "general nudge up"
    that shifted this from an original, deliberately-tight 268u). That
    nudge left only 250-258.8=-8.8u of clearance under the 70u-tall eyebrow
@@ -114,13 +124,18 @@ h1.title .ent-line{display:inline-block}
    there. Home is unaffected: its eyebrow is left empty (logo lives in
    the title slot instead — see index.html), so it has its own override
    below and was never part of this overlap. */
-body[data-planet="earth"] h1.title{top:calc(182 * var(--u))}
+body[data-planet="earth"] .title{top:calc(182 * var(--u))}
 
 /* top was 433.2u; pulled up to tighten the gap under the title (now that
-   the title itself sits lower again, see h1.title above) — same 33.2u
+   the title itself sits lower again, see .title above) — same 33.2u
    shift as .cta below, so the lede-to-cta gap this preserved unchanged,
    only the title-to-lede gap shrinks. */
-p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
+/* 400u until the .title-sub line was added under the title; moved down
+   44u to clear it (title bottom 382.4u + 14u gap + 27.5u subtitle line
+   = ~424u, then the same ~18-20u gap the title-to-lede spacing had).
+   Home keeps 400u: its logo title ends at 342u, so its subtitle already
+   fits above the lede (see override below). */
+p.lede{top:calc(444 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
   line-height:calc(38 * var(--u)); color:rgba(255,255,255,.95)}
 
 /* CTA ROW */
@@ -136,7 +151,17 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
    grow. Still well clear of the horizon: bottom edge lands at
    (507+66)/1163 ≈ 49.3% down frame, i.e. more clearance than before, not
    less. */
-.cta{top:calc(507 * var(--u)); height:calc(66 * var(--u)); isolation:isolate}
+/* 507u, then +44u with p.lede above (same .title-sub reason) so the
+   lede-to-cta gap is unchanged. Bottom edge now (551+66)/1163 ≈ 53% down
+   frame, still above the ~55% raw horizon. Home stays at 507u. */
+.cta{top:calc(551 * var(--u)); height:calc(66 * var(--u)); isolation:isolate}
+/* Scoped to the non-phone layouts (exact complement of the PHONE block
+   below): there .cta is position:relative with top:auto, which this more
+   specific selector would otherwise override and push it down by 507u. */
+@media (min-width:580px) and (min-height:621px){
+  body[data-planet="earth"] p.lede{top:calc(400 * var(--u))}
+  body[data-planet="earth"] .cta{top:calc(507 * var(--u))}
+}
 .cta a{display:inline-flex; align-items:center; justify-content:center;
   width:calc(216 * var(--u)); height:calc(66 * var(--u)); border-radius:calc(33 * var(--u));
   font-size:calc(17 * var(--u)); font-weight:700; letter-spacing:0; text-indent:0;
@@ -165,6 +190,9 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
   }
   p.lede br{display:none}
   p.lede{max-width:calc(620 * var(--u)); margin-left:auto; margin-right:auto; text-wrap:pretty}
+  /* Narrowest tablet frame is ~682u wide (580px at --u .85px); at 22u the
+     E-Commerce subtitle (~790u) would overflow its nowrap line. */
+  .title-sub{font-size:calc(17 * var(--u))}
 }
 
 /* Above the tablet block but still under the orbit-nav's panel-switch
@@ -194,10 +222,12 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
     padding:calc(56 * var(--u)) calc(26 * var(--u)) 0}
   .col{position:static; width:100%; right:auto}
   .eyebrow{font-size:calc(20 * var(--u)); letter-spacing:calc(5 * var(--u)); text-indent:calc(5 * var(--u))}
-  h1.title{font-size:calc(86 * var(--u) * var(--title-scale, 1)); margin-top:calc(18 * var(--u))}
+  .title{font-size:calc(86 * var(--u) * var(--title-scale, 1)); margin-top:calc(18 * var(--u))}
   p.lede{margin-top:calc(10 * var(--u)); font-size:calc(20 * var(--u));
     line-height:calc(32 * var(--u)); max-width:calc(400 * var(--u)); text-wrap:balance}
   p.lede br{display:none}
+  .title-sub{margin-top:calc(10 * var(--u)); font-size:calc(17 * var(--u)); white-space:normal;
+    max-width:calc(380 * var(--u)); margin-left:auto; margin-right:auto; text-wrap:balance}
   .cta{top:auto; margin-top:calc(18 * var(--u)); height:calc(60 * var(--u)); position:relative}
   .cta a{width:calc(190 * var(--u)); height:calc(60 * var(--u)); border-radius:calc(30 * var(--u))}
 }
@@ -207,7 +237,7 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
   :root{--u:max(min(.85px, calc(100vh / 470)), min(calc(100vw / 640), calc(100vh / 560)));
     --dh-px:calc(560 * var(--u)); --vshift:0px}
   .copy{padding-top:calc(26 * var(--u))}
-  h1.title{font-size:calc(64 * var(--u) * var(--title-scale, 1)); margin-top:calc(10 * var(--u))}
+  .title{font-size:calc(64 * var(--u) * var(--title-scale, 1)); margin-top:calc(10 * var(--u))}
   p.lede{margin-top:calc(7 * var(--u))}
   .cta{margin-top:calc(12 * var(--u))}
 }
@@ -346,18 +376,19 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
 .ent-mask,.ent-line{display:block}
 .anim .ent-mask{overflow:hidden; padding-top:.18em; margin-top:-.18em}
 .anim .ent-line{transform:translateY(115%); will-change:transform}
-.anim p.lede,.anim .cta a,.anim .sky{opacity:0}
+.anim p.lede,.anim .title-sub,.anim .cta a,.anim .sky{opacity:0}
 .anim .sky{will-change:opacity}
 
 .anim.play .sky{animation:ent-fade 1.6s var(--e-slow) .25s both}
 .anim.play .eyebrow .ent-line{animation:ent-reveal .75s var(--e-expo) .30s both}
-.anim.play h1.title .ent-line{animation:ent-reveal .95s var(--e-expo) .44s both}
+.anim.play .title .ent-line{animation:ent-reveal .95s var(--e-expo) .44s both}
+.anim.play .title-sub{--rise:10px; animation:ent-rise .7s var(--e-quint) .72s both}
 .anim.play p.lede{--rise:12px; animation:ent-rise .7s var(--e-quint) .86s both}
 .anim.play .cta a{--rise:8px; animation:ent-settle .7s var(--e-quint) 1.14s both}
 
 /* ============ SECTION HEADLINE REVEAL (scroll-triggered) ============ */
 /* Same masked slide-up mechanic and timing as the hero title's own
-   entrance (h1.title .ent-line above: ent-reveal, .95s, same easing),
+   entrance (.title .ent-line above: ent-reveal, .95s, same easing),
    reused for every .lp-headline site-wide (site.js finds them by that
    class alone, so new headlines added on any page pick this up with no
    per-page wiring). Can't reuse the hero's <html>.anim/.play toggle
@@ -381,7 +412,11 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
 /* ============ LOGO (in-flow, same slot/size on every branch) ============ */
 .eyebrow .logo-mark{display:inline-block; height:calc(70 * var(--u)); width:auto}
 /* Home: logo moves into the title slot (via JS) at the title's own scale */
-h1.title .logo-mark{display:inline-block;
+/* vertical-align:top drops the descender space a baseline-aligned
+   inline image leaves under itself (~25u at this font size), so the line
+   box ends at the logo's bottom edge and Home's .title-sub fits above the
+   lede. The logo itself doesn't move. */
+.title .logo-mark{display:inline-block; vertical-align:top;
   height:calc(160 * var(--u) * var(--title-scale, 1)); width:auto}
 
 /* ============ ORBIT NAV (side planetary panel) ============ */
