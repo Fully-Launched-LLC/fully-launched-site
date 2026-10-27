@@ -3,8 +3,8 @@
 
   // Shrinks the hero title (text on 4 branches, the wordmark image on Home)
   // to fit its box instead of overflowing on narrow viewports.
-  var titleEl = document.querySelector('h1.title');
-  var titleLine = document.querySelector('h1.title .ent-line');
+  var titleEl = document.querySelector('.title');
+  var titleLine = document.querySelector('.title .ent-line');
 
   function fitTitle(){
     if(!titleEl || !titleLine) return;
