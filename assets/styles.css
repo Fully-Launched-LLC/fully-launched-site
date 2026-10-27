@@ -109,7 +109,7 @@ body[data-planet="venus"] .sky::before{transform:scaleX(-1)}
    word. On the 4 branches it's a span inside h1.title; on Home the title
    slot is a div (the logo stays out of the H1) and this is the h1 itself.
    Sized independently of --title-scale, nowrap so it can't wrap into the
-   lede on the absolutely-positioned layouts (longest, E-Commerce, is
+   lede/cta on the absolutely-positioned layouts (longest, E-Commerce, is
    ~790u vs 1353u+ available above 1030px; the tablet block shrinks it,
    the phone block lets it wrap). */
 .title-sub{display:block; margin:calc(14 * var(--u)) 0 0; font-family:var(--font-body);
@@ -130,12 +130,7 @@ body[data-planet="earth"] .title{top:calc(182 * var(--u))}
    the title itself sits lower again, see .title above) — same 33.2u
    shift as .cta below, so the lede-to-cta gap this preserved unchanged,
    only the title-to-lede gap shrinks. */
-/* 400u until the .title-sub line was added under the title; moved down
-   44u to clear it (title bottom 382.4u + 14u gap + 27.5u subtitle line
-   = ~424u, then the same ~18-20u gap the title-to-lede spacing had).
-   Home keeps 400u: its logo title ends at 342u, so its subtitle already
-   fits above the lede (see override below). */
-p.lede{top:calc(444 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
+p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
   line-height:calc(38 * var(--u)); color:rgba(255,255,255,.95)}
 
 /* CTA ROW */
@@ -151,15 +146,16 @@ p.lede{top:calc(444 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
    grow. Still well clear of the horizon: bottom edge lands at
    (507+66)/1163 ≈ 49.3% down frame, i.e. more clearance than before, not
    less. */
-/* 507u, then +44u with p.lede above (same .title-sub reason) so the
-   lede-to-cta gap is unchanged. Bottom edge now (551+66)/1163 ≈ 53% down
-   frame, still above the ~55% raw horizon. Home stays at 507u. */
-.cta{top:calc(551 * var(--u)); height:calc(66 * var(--u)); isolation:isolate}
+/* 507u on Home (under its lede). The 4 branches have no lede, so the
+   button sits right under the H1's .title-sub instead: title bottom
+   382.4u + 14u gap + 27.5u subtitle line = ~424u, plus ~30u (about
+   Home's lede-to-cta gap) = 454u. Bottom edge (454+66)/1163 ≈ 44.7%
+   down frame, further above the horizon than Home's. */
+.cta{top:calc(454 * var(--u)); height:calc(66 * var(--u)); isolation:isolate}
 /* Scoped to the non-phone layouts (exact complement of the PHONE block
    below): there .cta is position:relative with top:auto, which this more
    specific selector would otherwise override and push it down by 507u. */
 @media (min-width:580px) and (min-height:621px){
-  body[data-planet="earth"] p.lede{top:calc(400 * var(--u))}
   body[data-planet="earth"] .cta{top:calc(507 * var(--u))}
 }
 .cta a{display:inline-flex; align-items:center; justify-content:center;
