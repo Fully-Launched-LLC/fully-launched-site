@@ -78,3 +78,8 @@ Identical across all 5 pages (verify by diff if touched). Cin7-style layout: log
 - Build /assets/tilt.js and wire it to team photos (confirmed not started, see Tilt effect above)
 - Real Legal/Privacy Policy pages (footer links currently placeholder #)
 - Dead CSS cleanup (old .team-card2/.about-hero dark-theme rules unused on Home, low priority)
+
+## Git workflow
+- Never open pull requests or create feature branches.
+- Work directly on main. Don't commit or push until I explicitly say "commit" or "merge to main".
+- When I say so: commit with a clear message and push to main.

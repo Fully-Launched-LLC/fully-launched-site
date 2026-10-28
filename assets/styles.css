@@ -204,7 +204,8 @@ body[data-planet="earth"] .title{top:calc(182 * var(--u))}
       --vshift:calc(max(0px, (100dvh - var(--dh-px))) * .34)}
   }
   .copy{top:calc(76 * var(--u)); display:flex; flex-direction:column; align-items:center;
-    padding:calc(56 * var(--u)) calc(26 * var(--u)) 0}
+    padding:calc(56 * var(--u)) max(calc(26 * var(--u)), env(safe-area-inset-right)) 0
+      max(calc(26 * var(--u)), env(safe-area-inset-left))}
   .col{position:static; width:100%; right:auto}
   .eyebrow{font-size:calc(20 * var(--u)); letter-spacing:calc(5 * var(--u)); text-indent:calc(5 * var(--u))}
   .title{font-size:calc(86 * var(--u) * var(--title-scale, 1)); margin-top:calc(18 * var(--u))}
@@ -239,18 +240,58 @@ body[data-planet="earth"] .title{top:calc(182 * var(--u))}
 @media (max-width:579px){
   .stage{height:100vh}
   @supports (height:100svh){ .stage{height:100svh} }
+  /* Bottom padding = 45svh (the horizon) + 16px, so even when the copy
+     fills the whole box the button keeps 16px of sky under it.
+     Top: --orbit-clear is the band's bottom (incl. its 28px blur fade)
+     + 20px; pulling 28px back starts the box 20px under the labels,
+     where the fade is nearly gone. .ui raises specificity over the
+     max-width:1250px block's .copy top, which comes later. */
+  .ui .copy{top:calc(var(--orbit-clear, calc(76 * var(--u))) - 28px)}
   .copy{transform:none; justify-content:center; justify-content:safe center;
-    padding:0 calc(26 * var(--u)) 45vh}
+    padding:0 max(calc(26 * var(--u)), env(safe-area-inset-right)) calc(45vh + 16px)
+      max(calc(26 * var(--u)), env(safe-area-inset-left))}
   @supports (height:100svh){
-    .copy{padding-bottom:max(45svh, env(safe-area-inset-bottom))}
+    .copy{padding-bottom:max(calc(45svh + 16px), env(safe-area-inset-bottom))}
   }
   body[data-planet="earth"] .eyebrow{display:none}
   /* fitTitle (site.js) shrinks Home's logo to this box's width. Home
      only: on the branches .title holds the page name as text, which
      would wrap in a narrower box instead of scaling down. */
   body[data-planet="earth"] .title{margin-top:0; width:80vw; margin-left:auto; margin-right:auto}
+  /* Branch page names: smaller, and kept on one line so fitTitle scales
+     long ones ("AI Integration", "E-Commerce") down instead of letting
+     them wrap into a second 79px line. */
+  /* .copy prefix: the base .eyebrow .logo-mark rule sits later in the file */
+  .copy .eyebrow .logo-mark{height:min(calc(70 * var(--u)), 52px)}
+  body:not([data-planet="earth"]) .title{margin-top:8px;
+    font-size:calc(clamp(34px, 11vw, 56px) * var(--title-scale, 1))}
+  body:not([data-planet="earth"]) .title .ent-line{white-space:nowrap}
   .title-sub{margin-top:16px}
   .cta{margin-top:24px}
+  body:not([data-planet="earth"]) .cta{margin-top:20px}
+  /* Branch heroes carry a logo + page name + tagline, too tall for the
+     sky above a ~55% horizon. Same top-anchored push-down as the
+     desktop framing rules above (there it's gated to min-width:580px);
+     uniform scale is fine here since a portrait cover-fit already crops
+     the sides. Horizon moves from ~55% to ~61%, matching Venus, which is
+     already that low and is left alone (its ::before carries the
+     scaleX(-1) mirror, which this would overwrite). */
+  body[data-planet="mars"] .sky::before, body[data-planet="mars"] .sky video,
+  body[data-planet="saturn"] .sky::before, body[data-planet="saturn"] .sky video,
+  body[data-planet="cortex"] .sky::before, body[data-planet="cortex"] .sky video{
+    transform-origin:50% 0%; transform:scale(1.11)}
+}
+/* SHORT PORTRAIT PHONE (e.g. iPhone SE with Safari toolbars, ~375x553):
+   the sky above the horizon is ~190px, so shrink the logo, page name
+   and button and tighten the gaps to keep 16px clear of the planet. */
+@media (max-width:579px) and (max-height:600px) and (orientation:portrait){
+  body[data-planet="earth"] .title{width:65vw}
+  .copy .eyebrow .logo-mark{height:38px}
+  body:not([data-planet="earth"]) .title{margin-top:6px;
+    font-size:calc(clamp(30px, 10vw, 42px) * var(--title-scale, 1))}
+  .title-sub{margin-top:10px}
+  .cta, body:not([data-planet="earth"]) .cta{margin-top:14px; height:46px}
+  .cta a{width:172px; height:46px; border-radius:23px}
 }
 @media (min-width:821px) and (max-height:660px){ .copy{transform:none} }
 
@@ -598,7 +639,7 @@ body[data-planet="earth"] .title{top:calc(182 * var(--u))}
        intentionally skips all of this — it doesn't sit over scrolling
        content the same way a full-width top band does. */
   .orbit-panel{top:0; left:0; right:0; align-items:center;
-    padding:calc(var(--nav-h) - 24px) 0 28px;
+    padding:calc(var(--nav-h) - 24px) env(safe-area-inset-right) 28px env(safe-area-inset-left);
     background:linear-gradient(to bottom, rgba(4,16,31,.88) 0%, rgba(4,16,31,.88) 62%, rgba(4,16,31,0) 100%);
     -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
     -webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
