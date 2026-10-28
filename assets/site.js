@@ -195,13 +195,25 @@
   // playback at a few points that reliably fire on mobile, on top of (not
   // instead of) the native attributes, without touching the crossfade
   // loop above.
+  //
+  // If the browser refuses outright (NotAllowedError, e.g. iOS Low Power
+  // Mode), stop asking: the poster stays up as a still, the native play
+  // button is hidden in styles.css, and nothing else is shown. Only a
+  // not-buffered-yet failure is worth the later retries.
   if(!reduceMotion){
     document.querySelectorAll('.sky video').forEach(function(video){
       video.muted = true;
+      var blocked = false;
       var tryPlay = function(){
-        if(!video.paused) return;
-        var p = video.play();
-        if(p && p.catch){ p.catch(function(){}); }
+        if(blocked || !video.paused) return;
+        try {
+          var p = video.play();
+          if(p && p.catch){
+            p.catch(function(err){
+              if(err && err.name === 'NotAllowedError'){ blocked = true; }
+            });
+          }
+        } catch(e){ blocked = true; }
       };
       tryPlay();
       video.addEventListener('loadedmetadata', tryPlay);

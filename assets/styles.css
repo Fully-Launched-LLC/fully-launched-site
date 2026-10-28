@@ -41,6 +41,14 @@ body[data-planet="venus"] .sky::before{transform:scaleX(-1)}
 .sky video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
   display:block; opacity:0; transition:opacity .22s linear; z-index:1}
 .sky video.is-active{opacity:1}
+/* iOS Safari in Low Power Mode blocks autoplay and draws its own play
+   button over the poster. Hide every native control layer, and take the
+   video out of hit-testing so a tap can never start playback or summon
+   the controls; the poster just stays up as a still. */
+.sky video{pointer-events:none}
+video::-webkit-media-controls,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-overlay-play-button{display:none !important; -webkit-appearance:none}
 @media (prefers-reduced-motion:reduce){ .sky video{display:none} }
 /* Earth's and Mars's source footage brings the planet's horizon into frame
    noticeably higher than Venus's — measured directly against the poster
@@ -126,13 +134,6 @@ body[data-planet="venus"] .sky::before{transform:scaleX(-1)}
    below and was never part of this overlap. */
 body[data-planet="earth"] .title{top:calc(182 * var(--u))}
 
-/* top was 433.2u; pulled up to tighten the gap under the title (now that
-   the title itself sits lower again, see .title above) — same 33.2u
-   shift as .cta below, so the lede-to-cta gap this preserved unchanged,
-   only the title-to-lede gap shrinks. */
-p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
-  line-height:calc(38 * var(--u)); color:rgba(255,255,255,.95)}
-
 /* CTA ROW */
 /* top was 597u (bottom edge at (597+66)/1163 ≈ 57% down frame); moved up
    to clear the ~55% horizon Saturn/Cortex/Earth/Mars sit at before the
@@ -146,17 +147,18 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
    grow. Still well clear of the horizon: bottom edge lands at
    (507+66)/1163 ≈ 49.3% down frame, i.e. more clearance than before, not
    less. */
-/* 507u on Home (under its lede). The 4 branches have no lede, so the
-   button sits right under the H1's .title-sub instead: title bottom
-   382.4u + 14u gap + 27.5u subtitle line = ~424u, plus ~30u (about
-   Home's lede-to-cta gap) = 454u. Bottom edge (454+66)/1163 ≈ 44.7%
-   down frame, further above the horizon than Home's. */
+/* No page has a lede any more (Home's old "4 ways" paragraph was
+   removed), so the button sits right under the H1's .title-sub: title
+   bottom 382.4u + 14u gap + 27.5u subtitle line = ~424u, plus ~30u =
+   454u. Bottom edge (454+66)/1163 ≈ 44.7% down frame. */
 .cta{top:calc(454 * var(--u)); height:calc(66 * var(--u)); isolation:isolate}
 /* Scoped to the non-phone layouts (exact complement of the PHONE block
    below): there .cta is position:relative with top:auto, which this more
-   specific selector would otherwise override and push it down by 507u. */
+   specific selector would otherwise override and push it down by 414u.
+   Home's title slot is the 160u logo at 182u, so its .title-sub ends at
+   182 + 160 + 14 + 27.5 = ~384u; same ~30u gap as the branches = 414u. */
 @media (min-width:580px) and (min-height:621px){
-  body[data-planet="earth"] .cta{top:calc(507 * var(--u))}
+  body[data-planet="earth"] .cta{top:calc(414 * var(--u))}
 }
 .cta a{display:inline-flex; align-items:center; justify-content:center;
   width:calc(216 * var(--u)); height:calc(66 * var(--u)); border-radius:calc(33 * var(--u));
@@ -184,22 +186,9 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
       --dh-px:calc(1120 * var(--u));
       --vshift:calc(max(0px, (100dvh - var(--dh-px))) * .38)}
   }
-  p.lede br{display:none}
-  p.lede{max-width:calc(620 * var(--u)); margin-left:auto; margin-right:auto; text-wrap:pretty}
   /* Narrowest tablet frame is ~682u wide (580px at --u .85px); at 22u the
      E-Commerce subtitle (~790u) would overflow its nowrap line. */
   .title-sub{font-size:calc(17 * var(--u))}
-}
-
-/* Above the tablet block but still under the orbit-nav's panel-switch
-   breakpoint (max-width:1250px): p.lede has no max-width in the default
-   (>1030px) rule below, so long-copy branches (e.g. Cortex, Venus) can
-   render an unwrapped line wide enough to reach under the orbit-nav even
-   though the vertical panel hasn't appeared yet at these widths. Same cap
-   the tablet block already uses, just carried through this gap. */
-@media (min-width:1031px) and (max-width:1250px){
-  p.lede br{display:none}
-  p.lede{max-width:calc(620 * var(--u)); margin-left:auto; margin-right:auto; text-wrap:pretty}
 }
 
 /* PHONE */
@@ -219,9 +208,6 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
   .col{position:static; width:100%; right:auto}
   .eyebrow{font-size:calc(20 * var(--u)); letter-spacing:calc(5 * var(--u)); text-indent:calc(5 * var(--u))}
   .title{font-size:calc(86 * var(--u) * var(--title-scale, 1)); margin-top:calc(18 * var(--u))}
-  p.lede{margin-top:calc(10 * var(--u)); font-size:calc(20 * var(--u));
-    line-height:calc(32 * var(--u)); max-width:calc(400 * var(--u)); text-wrap:balance}
-  p.lede br{display:none}
   .title-sub{margin-top:calc(10 * var(--u)); font-size:calc(17 * var(--u)); white-space:normal;
     max-width:calc(380 * var(--u)); margin-left:auto; margin-right:auto; text-wrap:balance}
   .cta{top:auto; margin-top:calc(18 * var(--u)); height:calc(60 * var(--u)); position:relative}
@@ -234,8 +220,37 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
     --dh-px:calc(560 * var(--u)); --vshift:0px}
   .copy{padding-top:calc(26 * var(--u))}
   .title{font-size:calc(64 * var(--u) * var(--title-scale, 1)); margin-top:calc(10 * var(--u))}
-  p.lede{margin-top:calc(7 * var(--u))}
   .cta{margin-top:calc(12 * var(--u))}
+}
+
+/* PORTRAIT PHONE: center the hero copy in the open sky instead of
+   stacking it from a fixed top padding (which left a big empty gap under
+   the orbit band and pushed the button down onto the planet). .copy
+   already spans from the band's measured bottom (--orbit-clear) to the
+   bottom of .stage; the 45svh bottom padding stops that box at ~55% down
+   the frame, which is where every branch's horizon sits once the 16:9
+   footage is cover-fitted to a portrait screen (55.1-61.4%, see the
+   framing notes above), so centering inside it keeps the button above
+   the planet. svh, not vh/dvh: the small viewport is the one with the
+   Safari toolbars showing, so nothing ends up under them, and the stage
+   doesn't resize as the toolbars collapse on scroll. Width-only gate:
+   landscape phones match the PHONE block via max-height but are far too
+   short for this. */
+@media (max-width:579px){
+  .stage{height:100vh}
+  @supports (height:100svh){ .stage{height:100svh} }
+  .copy{transform:none; justify-content:center; justify-content:safe center;
+    padding:0 calc(26 * var(--u)) 45vh}
+  @supports (height:100svh){
+    .copy{padding-bottom:max(45svh, env(safe-area-inset-bottom))}
+  }
+  body[data-planet="earth"] .eyebrow{display:none}
+  /* fitTitle (site.js) shrinks Home's logo to this box's width. Home
+     only: on the branches .title holds the page name as text, which
+     would wrap in a narrower box instead of scaling down. */
+  body[data-planet="earth"] .title{margin-top:0; width:80vw; margin-left:auto; margin-right:auto}
+  .title-sub{margin-top:16px}
+  .cta{margin-top:24px}
 }
 @media (min-width:821px) and (max-height:660px){ .copy{transform:none} }
 
@@ -372,14 +387,13 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
 .ent-mask,.ent-line{display:block}
 .anim .ent-mask{overflow:hidden; padding-top:.18em; margin-top:-.18em}
 .anim .ent-line{transform:translateY(115%); will-change:transform}
-.anim p.lede,.anim .title-sub,.anim .cta a,.anim .sky{opacity:0}
+.anim .title-sub,.anim .cta a,.anim .sky{opacity:0}
 .anim .sky{will-change:opacity}
 
 .anim.play .sky{animation:ent-fade 1.6s var(--e-slow) .25s both}
 .anim.play .eyebrow .ent-line{animation:ent-reveal .75s var(--e-expo) .30s both}
 .anim.play .title .ent-line{animation:ent-reveal .95s var(--e-expo) .44s both}
 .anim.play .title-sub{--rise:10px; animation:ent-rise .7s var(--e-quint) .72s both}
-.anim.play p.lede{--rise:12px; animation:ent-rise .7s var(--e-quint) .86s both}
 .anim.play .cta a{--rise:8px; animation:ent-settle .7s var(--e-quint) 1.14s both}
 
 /* ============ SECTION HEADLINE REVEAL (scroll-triggered) ============ */
@@ -410,8 +424,8 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
 /* Home: logo moves into the title slot (via JS) at the title's own scale */
 /* vertical-align:top drops the descender space a baseline-aligned
    inline image leaves under itself (~25u at this font size), so the line
-   box ends at the logo's bottom edge and Home's .title-sub fits above the
-   lede. The logo itself doesn't move. */
+   box ends at the logo's bottom edge and Home's .title-sub sits right
+   under it. The logo itself doesn't move. */
 .title .logo-mark{display:inline-block; vertical-align:top;
   height:calc(160 * var(--u) * var(--title-scale, 1)); width:auto}
 
@@ -622,7 +636,12 @@ p.lede{top:calc(400 * var(--u)); font-size:calc(24 * var(--u)); font-weight:400;
      aligned without reserving extra space for a second line that no
      longer happens. white-space stays at the base rule's nowrap (not
      overridden here) as a hard guarantee against a wrap ever reappearing. */
-  .orbit-label{font-size:calc(8.5px * var(--band-scale)); letter-spacing:.03em}
+  /* margin-top clears the active ring: .is-active's outline (2px, offset
+     4px) reaches 6px below the circle, past the li's 4px gap, so it was
+     drawing over the label. 8px + the gap puts the label ~6px under the
+     ring. Every circle here is the same square box (Saturn included, see
+     above), so all 5 labels share one baseline. */
+  .orbit-label{font-size:calc(8.5px * var(--band-scale)); letter-spacing:.03em; margin-top:8px}
   .orbit-label-full{display:none}
   .orbit-label-short{display:inline}
   .copy{top:var(--orbit-clear, calc(76 * var(--u)))}
